@@ -1,5 +1,7 @@
 # Modurite #
 
+[![Join the chat at https://gitter.im/BlackDice/modurite](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/BlackDice/modurite?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Powerful, yet quite simple way to create applications with loosely coupled modular architecture that imposes very few constrains.
 
 ## In development ##
