@@ -4,9 +4,11 @@ Powerful, yet quite simple way to create applications with loosely coupled modul
 
 ## In development ##
 
-This project is at early phases of a development. Current plan is to write complete documentation first followed by full unit tests. Only after that a functional code will be written.
+This project is at early phases of a development. Current plan is to write complete documentation first followed by full unit tests. Only after that a functional code will be written. 
 
 Framework will be written using ES6 and [http://babeljs.io/]. There should be a very few of other runtime dependencies.
+
+[![Join the chat at https://gitter.im/BlackDice/modurite](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/BlackDice/modurite) Feel free to join our chat room if you have question or some idea about a project.
 
 ## Basic usage
 
