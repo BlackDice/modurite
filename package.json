@@ -1,0 +1,21 @@
+{
+  "name": "modurite",
+  "version": "0.0.0",
+  "description": "Powerful, yet quite simple way to create applications \
+    with loosely coupled modular architecture that imposes very few constrains.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:BlackDice/modurite.git"
+  },
+  "keywords": [
+    "application",
+    "entry",
+    "module",
+    "extension"
+  ],
+  "author": "Daniel K.",
+  "license": "MIT"
+}
