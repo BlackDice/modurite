@@ -6,22 +6,27 @@ Powerful, yet quite simple way to create applications with loosely coupled modul
 
 This project is at early phases of a development. Current plan is to write complete documentation first followed by full unit tests. Only after that a functional code will be written.
 
-Framework will be written in ES6 using [http://babeljs.io/]. There should be a very few dependencies.
+Framework will be written using ES6 and [http://babeljs.io/]. There should be a very few of other runtime dependencies.
 
 ## Basic usage
 
 To use Modurite, just require it in your code.
 
+```javascript
     var modurite = require('modurite');
+```
 
 Very basic module is merely just a function.
 
+```javascript
     modurite(function() {
         // here goes module code - initialization
     });
+```
 
 Doesn't look very useful, right? Luckily modules can be nested.
 
+```javascript
     var mainModule = function() {
         this.add(firstModule);
         this.add(secondModule);  
@@ -33,11 +38,13 @@ Doesn't look very useful, right? Luckily modules can be nested.
         console.log("I am 2nd module of my parent");
     }
     modurite(mainModule); // both messages are logged in the console after this
+```
 
 ## Lifecycle phase ##
 
 This may sound surprising, but there is **no predefined lifecycle** at all. You can have as many phases as you need. Simply return object with a map of lifecycle methods from the module initialization. This is completely optional and you don't need to return anything.
 
+```javascript
     var lifeModule = function() {
         return {
             start: function(options) {
@@ -48,9 +55,11 @@ This may sound surprising, but there is **no predefined lifecycle** at all. You 
             }
         }
     }
+```
 
 You cannot access these methods from the outside. Instead you can execute lifecycle phases simply like this:
 
+```javascript
     // grab the invoker object
     var lifeModuleInvoker = modurite(lifeModule);
     
@@ -59,11 +68,13 @@ You cannot access these methods from the outside. Instead you can execute lifecy
     
     // invoke stop phase with a delay
     setTimeout(lifeModuleInvoker.invokeBind('stop'), 5000);
+```
 
 ## Nested lifecycle phases ##
 
 Lets combine two features explained so far. Since lifecycle methods are completely optional, you don't need to worry about how many (if any) of your nested modules actually uses specified lifecycle phase. It will propagate through whole hiearchy and invoke available lifecycle methods.
 
+```javascript
     var topModule = function() {
         this.add(helloModule);
     };
@@ -76,6 +87,7 @@ Lets combine two features explained so far. Since lifecycle methods are complete
     };
     var topInvoker = modurite(topModule);
     topInvoker('hello', 'master');
+```
 
 ### Execution order ###
 
@@ -97,6 +109,7 @@ Consider following example where every shown module in a hiearchy has common lif
 
 Generally it's recommended to add all your nested modules during module initialization phase. Adding module later (like during lifecycle phase) may impose some chaotic situation for you. Consider following example.
 
+```javascript
     var lateModule = function() {
         return {
             setup: function() {
@@ -112,6 +125,7 @@ Generally it's recommended to add all your nested modules during module initiali
         }
     }
     modurite(topModule).invoke('setup');
+```
 
 Since the `lateModule` wasn't part of hiearchy when `setup` phase has been invoked, it wont have its `setup` method called.
 
@@ -119,6 +133,7 @@ Since the `lateModule` wasn't part of hiearchy when `setup` phase has been invok
 
 Since memory footprint of modules is generally very low, they are meant to stay in there during application lifetime and just do its job. In case you really need a module with rather short lifespan, it's possible to remove it, but you should never forget about proper cleanup.
 
+```javascript
     var innerModule = function() {
         return {
             destroy: function() {
@@ -134,6 +149,7 @@ Since memory footprint of modules is generally very low, they are meant to stay 
             }
         }
     };
+```
 
 Removed module is popped out of the hiearchy together with any childs it may have and stops responding to any livecycle phases. Since the execution order of lifecycle methods is going from the bottom, you can use `destroy` phase here to actually take care of cleanup for the `innerModule`.
 
@@ -141,13 +157,16 @@ Removed module is popped out of the hiearchy together with any childs it may hav
 
 The Modurite generally catches all unhandled exceptions in a module code. These are wrapped with some additional meta information into customized `ModuriteError` object. Resulting error is re-thrown unless you sign up for its handling with one of the following methods.
 
+```javascript
     modurite.onError(function(err) {
     });
+```
 
 This is very basic and rather insufficient way of handling errors. It's meant only to handle anything that escapes your attention in a global manner. This way you can eg. log your errors and appologize to the user. It cannot ensure that your application isn't broken when this happens.
 
 To handle errors related to a single hiearchy of a modules, you can use similar approach.
 
+```javascript
     var badInvoker = modurite(errorneousModule);
     badInvoker.onError(function(err) {
         // handles all errors for the whole hiearchy 
@@ -156,6 +175,7 @@ To handle errors related to a single hiearchy of a modules, you can use similar 
         // handles errors during start lifecycle phase whenever it is invoked
     });
     badInvoker.invoke('start');
+```
 
 You may have noticed, that errors during initialization of modules cannot be handled this way, because handler is added after initialization is done. Such errors are usually considered app breaking and should appear only during development. Global handler mentioned above will serve well to catch these errors.
 
@@ -163,9 +183,11 @@ You may have noticed, that errors during initialization of modules cannot be han
 
 If you have some experience with code minification/obfluscation, you may know, that `this` cannot be mangled in any way. To help you battle with this, first argument of the module initialization function is identical to `this` keyword.
 
+```javascript
     modurite(function(smallerModule) {
         smallerModule.add(otherModule);
     });
+```
 
 ## Naming a module ##
 
@@ -173,15 +195,19 @@ You may think that by naming your module you can get access it from the anywhere
 
 Name is here merely as information to ease a development. It makes easier to identify what module you are editing right now. It is also used for debugging (stack traces) and logging purposes.
 
+```javascript
     modurite(function() {
         this.name = 'mClient';
     });
+```
 
-Modurite tries to be somewhat smart on this. If you specify first argument to a function as mentioned above, it will be set as a module name for you. Thus avoid usuing generic names in there, eg. "myModule", or simply override the name with anything you like.
+Modurite tries to be somewhat smart on this. If you specify first argument to a function as mentioned above, it will be set as a module name for you. Thus avoid useing generic names in there, eg. "myModule", or simply override the name with anything you like.
 
+```javascript
     modurite(function(mClient) {
         this.name === "mClient" //true
     });
+```
 
 ## Advanced usage
 
